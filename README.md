@@ -83,9 +83,28 @@ Omítelo con `--skip-agents`.
 
 ## Uso
 
+Desde cero, sin clonar a mano:
+
 ```bash
-git clone <este-repo> ~/.dotfile
-cd ~/.dotfile
+curl -fsSL https://raw.githubusercontent.com/dragones-tech/dotfiles/main/bootstrap.sh | bash
+```
+
+`bootstrap.sh` instala `git` si falta, clona el repo en `~/.dotfiles` (o lo
+actualiza con un `git pull --ff-only` si ya está) y ejecuta `install.sh`. Los
+argumentos se le pasan tal cual al instalador:
+
+```bash
+curl -fsSL .../bootstrap.sh | bash -s -- --dry-run
+```
+
+Se puede cambiar el destino y el origen con `DOTFILES_DIR`, `DOTFILES_REPO` y
+`DOTFILES_BRANCH`.
+
+O clonando tú mismo:
+
+```bash
+git clone https://github.com/dragones-tech/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
 ./install.sh
 exec zsh
 ```
@@ -138,10 +157,14 @@ El script es idempotente: se puede volver a ejecutar sin efectos duplicados.
 ## Estructura
 
 ```
+bootstrap.sh        clona el repo y lanza install.sh (para 'curl | bash')
 install.sh          orquestador, idempotente
 lib/common.sh       logging, dry-run, symlinks con respaldo
 config/             ficheros que se enlazan a $HOME
 ```
+
+El repo tiene que quedarse donde se clone: `install.sh` crea symlinks que
+**apuntan** a `config/`, así que borrar `~/.dotfiles` rompe la configuración.
 
 ## Atajos útiles
 

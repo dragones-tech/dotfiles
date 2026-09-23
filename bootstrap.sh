@@ -82,7 +82,9 @@ echo
 
 # Bajo 'curl | bash' la stdin es la tubería, no el terminal. Reconectarla a
 # /dev/tty permite que sudo (y cualquier prompt) siga funcionando.
-if [[ -r /dev/tty ]]; then
+# ('-r /dev/tty' no basta: el nodo existe aunque no haya terminal de control,
+# así que hay que intentar abrirlo de verdad.)
+if { : < /dev/tty; } 2>/dev/null; then
   exec "$installer" "$@" < /dev/tty
 else
   info "Sin terminal interactivo: sudo debe estar preautorizado."
