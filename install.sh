@@ -241,9 +241,11 @@ install_nerd_font() {
     if [[ "$DRY_RUN" == true ]]; then
       info "(dry-run) curl -fsSL $url | unzip -d $font_dir"
     else
+      # Limpieza explícita, no 'trap ... RETURN': en bash ese trap NO muere con
+      # la función, sigue armado y vuelve a dispararse en retornos posteriores,
+      # cuando '$tmp' (local) ya no existe → "tmp: unbound variable" con set -u.
       local tmp
       tmp="$(mktemp -d)"
-      trap 'rm -rf "$tmp"' RETURN
       if curl -fsSL -o "$tmp/font.zip" "$url"; then
         mkdir -p "$font_dir"
         # Solo los 4 cortes que usa una terminal; el zip trae ~100 ficheros.
@@ -251,8 +253,10 @@ install_nerd_font() {
           "${NERD_FONT}NerdFont-Regular.ttf" "${NERD_FONT}NerdFont-Bold.ttf" \
           "${NERD_FONT}NerdFont-Italic.ttf" "${NERD_FONT}NerdFont-BoldItalic.ttf"
         fc-cache -f "$font_dir" >/dev/null
+        rm -rf "$tmp"
         ok "Instalada en $font_dir"
       else
+        rm -rf "$tmp"
         warn "No se pudo descargar la fuente; instálala a mano desde nerdfonts.com"
         return
       fi
