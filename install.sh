@@ -279,13 +279,11 @@ install_nerd_font() {
 
 link_configs() {
   step "Enlazando ficheros de configuración"
-  link "$DOTFILES_DIR/config/zshrc"         "$HOME/.zshrc"
-  link "$DOTFILES_DIR/config/zshenv"        "$HOME/.zshenv"
-  link "$DOTFILES_DIR/config/gitconfig"     "$HOME/.gitconfig"
-  link "$DOTFILES_DIR/config/gitignore"     "$HOME/.gitignore_global"
-  link "$DOTFILES_DIR/config/mise.toml"     "$HOME/.config/mise/config.toml"
-  link "$DOTFILES_DIR/config/default-gems"  "$HOME/.default-gems"
-  link "$DOTFILES_DIR/config/nvim/init.lua" "$HOME/.config/nvim/init.lua"
+  local src dest
+  while IFS='|' read -r src dest; do
+    [[ -n "$src" ]] || continue
+    link "$DOTFILES_DIR/$src" "$dest"
+  done < <(dotfiles_links)
 }
 
 install_mise_tools() {

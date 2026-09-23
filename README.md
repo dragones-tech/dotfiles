@@ -121,6 +121,27 @@ Opciones:
 
 El script es idempotente: se puede volver a ejecutar sin efectos duplicados.
 
+## Validación
+
+`verify.sh` comprueba que el entorno quedó bien y **sale con código != 0** si
+algo falla, así que sirve en CI o para validar una prueba en contenedor sin
+leer el log entero:
+
+```bash
+~/.dotfiles/verify.sh           # detalle de cada comprobación
+~/.dotfiles/verify.sh --quiet   # solo los fallos y el recuento
+```
+
+Comprueba que los symlinks apuntan al repo, que **zsh arranca sin errores**
+(`config/zshrc` se enlaza pero nunca se ejecuta durante la instalación: un
+error de sintaxis ahí dejaría rota toda shell nueva y `install.sh` terminaría
+en verde), que `~/.local/bin` está en el PATH, que los runtimes coinciden con
+las versiones de `config/mise.toml`, y que git lee de verdad el `gitconfig`
+enlazado.
+
+Lo que depende de las banderas `--skip-*` (PostgreSQL, herdr, fresh) se marca
+como omitido en vez de fallar.
+
 ## Notas para WSL
 
 - **systemd**: sin él, los servicios se arrancan a mano
@@ -159,6 +180,7 @@ El script es idempotente: se puede volver a ejecutar sin efectos duplicados.
 ```
 bootstrap.sh        clona el repo y lanza install.sh (para 'curl | bash')
 install.sh          orquestador, idempotente
+verify.sh           comprueba el resultado; sale != 0 si algo falla
 lib/common.sh       logging, dry-run, symlinks con respaldo
 config/             ficheros que se enlazan a $HOME
 ```

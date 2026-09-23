@@ -67,3 +67,18 @@ link() {
   ln -sfn "$src" "$dest"
   ok "$dest → $src"
 }
+
+# Ficheros que se enlazan a $HOME, como pares "ruta-en-repo|destino".
+# Fuente única: la usan install.sh (para crearlos) y verify.sh (para
+# comprobarlos), de modo que no puedan desincronizarse.
+dotfiles_links() {
+  cat <<PAIRS
+config/zshrc|$HOME/.zshrc
+config/zshenv|$HOME/.zshenv
+config/gitconfig|$HOME/.gitconfig
+config/gitignore|$HOME/.gitignore_global
+config/mise.toml|$HOME/.config/mise/config.toml
+config/default-gems|$HOME/.default-gems
+config/nvim/init.lua|$HOME/.config/nvim/init.lua
+PAIRS
+}
