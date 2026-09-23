@@ -20,6 +20,12 @@ source "$DOTFILES_DIR/lib/common.sh"
 QUIET=false
 [[ "${1:-}" == "--quiet" ]] && QUIET=true
 
+# El entorno se configura para zsh: '~/.local/bin' entra en el PATH vía
+# config/zshenv, que bash no lee. Sin esto, verify.sh (que corre en bash) no
+# vería mise, herdr ni nada instalado ahí, y daría falsos negativos.
+PATH="$HOME/.local/bin:$PATH"
+export PATH
+
 # Contadores. Ojo: nada de '((N++))' — con set -e, un post-incremento desde 0
 # devuelve estado 1 y mataría el script.
 N_PASS=0; N_FAIL=0; N_SKIP=0
@@ -167,9 +173,17 @@ check_tools() {
   done
 
   # Opcionales: dependen de las banderas --skip-*.
-  for t in psql herdr fresh; do
+  for t in psql herdr; do
     if have "$t"; then pass "$t"; else skip "$t ausente (¿--skip-*?)"; fi
   done
+
+  # fresh lo administra mise, así que no está en el PATH salvo que mise esté
+  # activado (cosa que hace zshrc, no bash). Hay que preguntárselo a mise.
+  if have mise && mise exec -- fresh --version >/dev/null 2>&1; then
+    pass "fresh"
+  else
+    skip "fresh ausente (¿--skip-*?)"
+  fi
 }
 
 # ── Configuración de git ─────────────────────────────────────────────────────
