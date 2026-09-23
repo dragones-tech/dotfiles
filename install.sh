@@ -102,10 +102,14 @@ install_openssh_server() {
   step "Instalando OpenSSH (cliente + servidor)"
   run sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     openssh-server
-  if ! is_wsl; then
+  # El criterio es si hay systemd, no si es WSL: un contenedor tampoco lo tiene
+  # y 'systemctl' ni siquiera existe, lo que abortaría el script por pipefail.
+  if is_wsl; then
+    info "WSL detectado: sshd instalado pero no habilitado (arráncalo con 'sudo service ssh start')"
+  elif systemd_running; then
     run sudo systemctl enable --now ssh
   else
-    info "WSL detectado: sshd instalado pero no habilitado (arráncalo con 'sudo service ssh start')"
+    info "Sin systemd: sshd instalado pero no habilitado (arráncalo con 'sudo service ssh start')"
   fi
 }
 
@@ -143,11 +147,13 @@ install_postgresql() {
   run sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
     "postgresql-$PG_MAJOR" "postgresql-client-$PG_MAJOR" "postgresql-contrib-$PG_MAJOR" libpq-dev
 
-  if is_wsl && ! systemd_running; then
+  if systemd_running; then
+    run sudo systemctl enable --now postgresql
+  elif is_wsl; then
     info "WSL sin systemd: arranca el servidor con 'sudo service postgresql start'"
     info "Para arranque automático, activa systemd en /etc/wsl.conf ([boot] systemd=true)"
   else
-    run sudo systemctl enable --now postgresql
+    info "Sin systemd: arranca el servidor con 'sudo service postgresql start'"
   fi
 
   # Rol de superusuario con el nombre del usuario actual → 'psql' sin flags.
