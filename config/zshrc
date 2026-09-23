@@ -1,0 +1,84 @@
+# ~/.zshrc — shells interactivas.
+
+# ── Oh My Zsh ────────────────────────────────────────────────────────────────
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+
+# Plugins. 'zsh-syntax-highlighting' debe ir siempre al final.
+plugins=(
+  git
+  gh
+  sudo                      # pulsa ESC dos veces para reejecutar con sudo
+  extract                   # 'x fichero.tar.gz' descomprime cualquier formato
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
+
+# Oh My Zsh ya configura compinit, historial, colores y keybindings.
+CASE_SENSITIVE="false"
+HYPHEN_INSENSITIVE="true"
+zstyle ':omz:update' mode reminder     # avisa de updates, no los aplica solo
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+
+if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+else
+  # Sin Oh My Zsh: prompt mínimo para no quedarse con el de serie.
+  autoload -Uz compinit && compinit -C
+  PROMPT='%F{green}➜%f %F{cyan}%1~%f '
+fi
+
+# ── Historial (amplía lo que pone Oh My Zsh) ─────────────────────────────────
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE HIST_REDUCE_BLANKS HIST_VERIFY
+
+# ── Comportamiento ───────────────────────────────────────────────────────────
+setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS
+setopt INTERACTIVE_COMMENTS NO_BEEP
+setopt EXTENDED_GLOB
+
+# ── Teclas ───────────────────────────────────────────────────────────────────
+bindkey '^[[1;5C' forward-word               # ctrl+→
+bindkey '^[[1;5D' backward-word              # ctrl+←
+
+# ── Alias ────────────────────────────────────────────────────────────────────
+alias ls='ls --color=auto --group-directories-first'
+alias ll='ls -lh'
+alias la='ls -lha'
+alias grep='grep --color=auto'
+alias vi='nvim'
+alias vim='nvim'
+alias v='nvim'
+alias f='fresh'                      # editor de terminal
+alias ..='cd ..'
+alias ...='cd ../..'
+alias df='df -h'
+alias du='du -h'
+alias pg='sudo service postgresql'   # WSL sin systemd
+
+# ── WSL ──────────────────────────────────────────────────────────────────────
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+  alias pbcopy='clip.exe'
+  alias winhome='cd /mnt/c/Users/$USER'
+
+  # 'wslview' (paquete wslu) abre URLs y ficheros con la app de Windows.
+  if command -v wslview >/dev/null 2>&1; then
+    alias open='wslview'
+    export BROWSER='wslview'
+  else
+    alias open='explorer.exe'
+  fi
+fi
+
+# ── mise (runtimes) ──────────────────────────────────────────────────────────
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
+
+# ── Completados de terceros ──────────────────────────────────────────────────
+command -v mise >/dev/null 2>&1 && eval "$(mise completion zsh)"
+
+# ── Locales ──────────────────────────────────────────────────────────────────
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

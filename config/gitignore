@@ -1,0 +1,22 @@
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+*.swp
+*.swo
+.idea/
+.vscode/
+*~
+
+# Entornos y secretos
+.env
+.env.local
+.direnv/
+.venv/
+__pycache__/
+node_modules/
+
+# Logs
+*.log

@@ -1,0 +1,26 @@
+# ~/.config/mise/config.toml — runtimes globales administrados con mise.
+# Cambia una versión aquí y ejecuta: mise install
+
+[tools]
+ruby   = "4.0"
+python = "3.14"
+node   = "24"     # línea LTS
+uv     = "latest"
+pnpm   = "latest"
+
+# Herramientas de línea de comandos
+"github:sinelaw/fresh" = "latest"     # editor de terminal (backend ubi)
+
+[settings]
+# Instala las dependencias declaradas al entrar en un directorio con .mise.toml
+experimental = true
+# Verificación de checksums/firmas en las descargas
+lockfile = true
+# Compilaciones precompiladas de Python (evita compilar desde fuente)
+python.compile = false
+# Ruby vía ruby-build
+ruby.default_packages_file = "~/.default-gems"
+
+[env]
+# uv gestiona sus propios entornos; evita que toque el Python del sistema
+UV_PYTHON_PREFERENCE = "only-managed"

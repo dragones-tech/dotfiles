@@ -1,0 +1,43 @@
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+[pull]
+	rebase = true
+[push]
+	default = current
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[rebase]
+	autosquash = true
+	autostash = true
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[merge]
+	conflictstyle = zdiff3
+[rerere]
+	enabled = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[alias]
+	st = status -sb
+	co = checkout
+	sw = switch
+	br = branch
+	ci = commit
+	amend = commit --amend --no-edit
+	lg = log --oneline --graph --decorate
+	last = log -1 --stat
+	unstage = restore --staged
+[credential "https://github.com"]
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = !gh auth git-credential
+[include]
+	path = ~/.gitconfig.local
